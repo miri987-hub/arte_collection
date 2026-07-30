@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>면접 기출문제 아카이브</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .ia-wrap { font-family: 'Noto Sans KR', sans-serif; background: #F5F4F0; min-height: 100vh; padding: 32px 24px 80px; color: #22242A; }
+  .ia-head { font-family: 'Noto Serif KR', serif; }
+  .ia-btn { cursor: pointer; border: none; border-radius: 8px; font-family: inherit; font-weight: 500; transition: opacity .15s; }
+  .ia-btn:hover { opacity: .85; }
+  .ia-input, .ia-select, .ia-textarea { font-family: inherit; border: 1px solid #D8D5CC; border-radius: 8px; padding: 9px 12px; font-size: 14px; background: #fff; color: #22242A; }
+  .ia-card { background: #fff; border: 1px solid #E5E2D8; border-radius: 12px; }
+  .ia-pill { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:100px; background:#fff; border:1px solid #E5E2D8; font-size:13px; cursor:pointer; }
+  .ia-pill:hover { border-color:#B4B2A9; }
+</style>
+</head>
+<body>
+
+<div id="siteGate" style="position:fixed;inset:0;background:#1D3A5F;z-index:5000;display:flex;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:#fff;border-radius:16px;padding:32px;width:100%;max-width:340px;text-align:center;">
+    <h2 style="font-family:'Noto Serif KR',serif;font-size:19px;font-weight:700;color:#1D3A5F;margin:0 0 4px;">아르떼스피치 면접강사 전용</h2>
+    <p style="font-size:14px;color:#22242A;margin:0 0 18px;font-weight:500;">면접 기출문제 아카이브</p>
+    <input class="ia-input" id="gateInput" type="password" style="width:100%;text-align:center;font-size:16px;letter-spacing:2px;" placeholder="비밀번호">
+    <p id="gateError" style="display:none;color:#A32D2D;font-size:12px;margin:8px 0 0;">비밀번호가 올바르지 않습니다.</p>
+    <button class="ia-btn" id="gateSubmit" style="width:100%;margin-top:14px;background:#1D3A5F;color:#fff;padding:11px 0;font-size:14px;">입장하기</button>
+  </div>
+</div>
+
+<div class="ia-wrap">
+  <div style="max-width:1080px;margin:0 auto;">
+
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px;">
+      <div>
+        <p style="font-size:12.5px;color:#993C1D;margin:0 0 2px;font-weight:700;letter-spacing:0.3px;">아르떼스피치 소속 강사 전용</p>
+        <h1 class="ia-head" style="font-size:24px;font-weight:700;margin:0;color:#1D3A5F;">면접기출문제 아카이브 <span style="font-size:13px;font-weight:500;color:#A32D2D;">(유출은 엄격히 금합니다.)</span></h1>
+      </div>
+      <button class="ia-btn" id="btnAdd" style="display:none;background:#1D3A5F;color:#fff;padding:11px 20px;font-size:14px;align-items:center;gap:6px;">
+        <i class="ti ti-plus" aria-hidden="true"></i> 기출문제 등록
+      </button>
+    </div>
+
+    <div id="statusBanner" style="display:none;margin:14px 0;padding:10px 14px;border-radius:8px;font-size:13px;"></div>
+
+    <div id="catManagerWrap" style="display:none;">
+      <div class="ia-card" style="padding:14px 16px;margin:16px 0;">
+        <h3 style="font-size:14px;font-weight:500;margin:0 0 10px;color:#5F5E5A;">아카이브 접속 비밀번호</h3>
+        <p style="font-size:12px;color:#888780;margin:0 0 10px;">강사님들이 이 페이지에 처음 들어올 때 입력하는 비밀번호예요. 강사가 바뀌면 여기서 바꿔주세요.</p>
+        <div style="display:flex;gap:8px;">
+          <input class="ia-input" id="newSitePwInput" placeholder="새 접속 비밀번호" style="flex:1;max-width:260px;">
+          <button class="ia-btn" id="btnChangeSitePw" style="background:#F1EFE8;color:#1D3A5F;padding:9px 14px;font-size:13px;">비밀번호 변경</button>
+        </div>
+      </div>
+      <div class="ia-card" style="padding:14px 16px;margin:16px 0;">
+        <h3 style="font-size:14px;font-weight:500;margin:0 0 10px;color:#5F5E5A;">섹션 관리</h3>
+        <div id="catManager" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;"></div>
+        <div style="display:flex;gap:8px;">
+          <input class="ia-input" id="newCatInput" placeholder="새 섹션 이름 (예: 임용)" style="flex:1;max-width:260px;">
+          <button class="ia-btn" id="btnAddCat" style="background:#F1EFE8;color:#1D3A5F;padding:9px 14px;font-size:13px;">섹션 추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="catTabs" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;"></div>
+
+    <div class="ia-card" style="padding:14px 16px;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <select class="ia-select" id="fOrg"><option value="">기관/기업 선택</option></select>
+      <select class="ia-select" id="fJob"><option value="">직무/직렬/지역 선택</option></select>
+      <select class="ia-select" id="fYear"><option value="">연도 선택</option></select>
+      <input class="ia-input" id="fSearch" placeholder="기업명, 질문 내용 검색" style="flex:1;min-width:180px;">
+      <button class="ia-btn" id="btnReset" style="background:#F1EFE8;color:#5F5E5A;padding:9px 14px;font-size:13px;">초기화</button>
+    </div>
+
+    <div id="countLine" style="font-size:13px;color:#6B6F76;margin-bottom:10px;"></div>
+    <div id="listArea"></div>
+
+  </div>
+</div>
+
+<button class="ia-btn" id="btnAdminToggle" style="position:fixed;right:20px;bottom:20px;background:#fff;border:1px solid #D8D5CC;color:#888780;padding:8px 14px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);z-index:900;">
+  <i class="ti ti-lock" aria-hidden="true"></i> 관리자 모드
+</button>
+
+<div id="pwOverlay" style="display:none;position:fixed;inset:0;background:rgba(29,58,95,0.35);z-index:999;align-items:center;justify-content:center;padding:16px;">
+  <div class="ia-card" style="width:100%;max-width:340px;padding:22px;">
+    <h2 class="ia-head" style="font-size:16px;font-weight:700;margin:0 0 12px;color:#1D3A5F;">관리자 비밀번호</h2>
+    <input class="ia-input" id="pwInput" type="password" style="width:100%;" placeholder="비밀번호 입력">
+    <p id="pwError" style="display:none;color:#A32D2D;font-size:12px;margin:8px 0 0;">비밀번호가 올바르지 않습니다.</p>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <button class="ia-btn" id="pwCancel" style="background:#F1EFE8;color:#5F5E5A;padding:9px 14px;font-size:13px;">취소</button>
+      <button class="ia-btn" id="pwSubmit" style="background:#1D3A5F;color:#fff;padding:9px 14px;font-size:13px;">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalOverlay" style="display:none;position:fixed;inset:0;background:rgba(29,58,95,0.35);z-index:999;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto;">
+  <div class="ia-card" style="width:100%;max-width:520px;padding:24px;">
+    <h2 class="ia-head" id="modalTitle" style="font-size:18px;font-weight:700;margin:0 0 16px;color:#1D3A5F;">기출문제 등록</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <label style="font-size:13px;color:#5F5E5A;">분류
+        <select class="ia-select" id="mCat" style="width:100%;margin-top:4px;"></select>
+      </label>
+      <div style="display:flex;gap:10px;">
+        <label style="font-size:13px;color:#5F5E5A;flex:1;">지점 <span style="color:#B4B2A9;font-weight:400;">(관리자만 보임)</span>
+          <select class="ia-select" id="mBranch" style="width:100%;margin-top:4px;">
+            <option value="대구점">대구점</option>
+            <option value="창원점">창원점</option>
+          </select>
+        </label>
+        <label style="font-size:13px;color:#5F5E5A;flex:1;">수강생 이름 <span style="color:#B4B2A9;font-weight:400;">(관리자만 보임)</span>
+          <input class="ia-input" id="mStaffName" style="width:100%;margin-top:4px;" placeholder="예: 김OO">
+        </label>
+      </div>
+      <label style="font-size:13px;color:#5F5E5A;">기관/기업명
+        <input class="ia-input" id="mOrg" style="width:100%;margin-top:4px;" placeholder="예: 삼성전자, 서울특별시소방재난본부">
+      </label>
+      <label style="font-size:13px;color:#5F5E5A;">직무/직렬/지역
+        <input class="ia-input" id="mJob" style="width:100%;margin-top:4px;" placeholder="예: 마케팅, 전산직, 일반행정, 서울">
+      </label>
+      <label style="font-size:13px;color:#5F5E5A;">연도
+        <input class="ia-input" id="mYear" style="width:100%;margin-top:4px;" placeholder="예: 2025">
+      </label>
+      <label style="font-size:13px;color:#5F5E5A;">1) 면접순서
+        <textarea class="ia-textarea" id="mOrder" rows="2" style="width:100%;margin-top:4px;resize:vertical;" placeholder="예: 1번째 질문&#10;(줄바꿈 가능)"></textarea>
+      </label>
+      <label style="font-size:13px;color:#5F5E5A;">2) 질문내용
+        <textarea class="ia-textarea" id="mQuestion" rows="3" style="width:100%;margin-top:4px;resize:vertical;" placeholder="받은 질문을 그대로 적어주세요"></textarea>
+      </label>
+      <label style="font-size:13px;color:#5F5E5A;">3) 특이사항
+        <textarea class="ia-textarea" id="mMemo" rows="2" style="width:100%;margin-top:4px;resize:vertical;" placeholder="꼬리질문, 분위기 등 (줄바꿈 가능)"></textarea>
+      </label>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+      <button class="ia-btn" id="mCancel" style="background:#F1EFE8;color:#5F5E5A;padding:10px 16px;font-size:14px;">취소</button>
+      <button class="ia-btn" id="mSave" style="background:#1D3A5F;color:#fff;padding:10px 16px;font-size:14px;">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.2/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyCBfKRLf0kwNgoWY9EnTTE4sdqdmvy2kCc",
+    authDomain: "artecollections-63091.firebaseapp.com",
+    projectId: "artecollections-63091",
+    storageBucket: "artecollections-63091.firebasestorage.app",
+    messagingSenderId: "708498729545",
+    appId: "1:708498729545:web:2b300fc622c8a8c976ed98"
+  };
+
+  const ADMIN_PASSWORD = "arte1231!";
+  const DEFAULT_CATS = ["사기업","공기업/공공기관","소방공무원","군무원","경찰","임용","국가직","지방직"];
+  const REGION_PRIMARY_CATS = ["소방공무원","경찰","지방직"];
+  const PALETTE = ["#1D3A5F","#2F6F62","#993C1D","#5F5E5A","#0C447C","#712B13","#27500A","#3C3489","#993556","#854F0B"];
+
+  const DEFAULT_SITE_PASSWORD = "23592";
+  let siteAccessPassword = DEFAULT_SITE_PASSWORD;
+  let cats = DEFAULT_CATS.slice();
+  let data = [];
+  let activeCat = "전체";
+  let editingId = null;
+  let isAdmin = false;
+  let docRef = null;
+  let ready = false;
+
+  function groupLabel(cat){ return REGION_PRIMARY_CATS.includes(cat) ? '지역' : '직무'; }
+  function colorFor(cat){ const idx = cats.indexOf(cat); return PALETTE[idx>=0 ? idx % PALETTE.length : 0]; }
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function uniqSorted(arr){ return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),'ko')); }
+  function uid(){ return 'q'+Date.now()+Math.random().toString(36).slice(2,7); }
+
+  function showBanner(msg, isError){
+    const b = document.getElementById('statusBanner');
+    b.textContent = msg;
+    b.style.display = 'block';
+    b.style.background = isError ? '#FCEBEB' : '#EAF3DE';
+    b.style.color = isError ? '#791F1F' : '#27500A';
+    if(!isError) setTimeout(()=>{ b.style.display='none'; }, 2500);
+  }
+  function errMsg(e){ return '오류: ' + (e && e.message ? e.message : '저장에 실패했습니다. 인터넷 연결을 확인해주세요.'); }
+
+  async function saveCats(){ await docRef.update({ categories: cats }); }
+  async function saveQuestions(){ await docRef.update({ questions: data }); }
+
+  function renderCatManager(){
+    const el = document.getElementById('catManager');
+    if(cats.length===0){ el.innerHTML = '<span style="font-size:13px;color:#888780;">등록된 섹션이 없습니다.</span>'; return; }
+    el.innerHTML = cats.map(c=>{
+      const color = colorFor(c);
+      return `<span style="display:inline-flex;align-items:center;gap:6px;padding:5px 6px 5px 12px;border-radius:100px;background:#F1EFE8;font-size:13px;color:${color};">
+        ${escapeHtml(c)}
+        <button class="ia-btn cat-del" data-cat="${escapeHtml(c)}" style="background:none;color:#B4B2A9;padding:2px 6px;font-size:13px;">×</button>
+      </span>`;
+    }).join('');
+    el.querySelectorAll('.cat-del').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        const cat = b.dataset.cat;
+        if(b.dataset.confirm!=='1'){
+          b.dataset.confirm = '1';
+          b.textContent = '정말?';
+          setTimeout(()=>{ if(b.dataset.confirm==='1'){ b.dataset.confirm=''; b.textContent='×'; } }, 4000);
+          return;
+        }
+        const prevCats = cats.slice(), prevData = data.slice();
+        cats = cats.filter(c=>c!==cat);
+        data = data.filter(d=>d.cat!==cat);
+        if(activeCat===cat) activeCat = "전체";
+        try{ await saveCats(); await saveQuestions(); showBanner('섹션이 삭제되었습니다.', false); }
+        catch(e){ cats = prevCats; data = prevData; showBanner(errMsg(e), true); }
+        renderAll();
+      });
+    });
+  }
+
+  function renderTabs(){
+    const el = document.getElementById('catTabs');
+    const all = ["전체", ...cats];
+    el.innerHTML = all.map(c=>{
+      const active = c===activeCat;
+      const color = c==="전체" ? "#1D3A5F" : colorFor(c);
+      return `<button class="ia-btn cat-tab" data-cat="${escapeHtml(c)}" style="padding:7px 14px;font-size:13px;
+        background:${active?color:'#fff'};color:${active?'#fff':color};
+        border:1px solid ${color};">${escapeHtml(c)}</button>`;
+    }).join('');
+    el.querySelectorAll('.cat-tab').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        activeCat = b.dataset.cat;
+        document.getElementById('fOrg').value='';
+        document.getElementById('fJob').value='';
+        document.getElementById('fYear').value='';
+        document.getElementById('fSearch').value='';
+        renderTabs(); renderFilterOptions(); renderList();
+      });
+    });
+  }
+
+  function renderFilterOptions(){
+    const filtered = activeCat==="전체" ? data : data.filter(d=>d.cat===activeCat);
+    const orgs = uniqSorted(filtered.map(d=>d.org));
+    const jobs = uniqSorted(filtered.map(d=>d.job));
+    const years = uniqSorted(filtered.map(d=>d.year)).sort((a,b)=>b-a);
+    const fOrg = document.getElementById('fOrg'), fJob = document.getElementById('fJob'), fYear = document.getElementById('fYear');
+    const keepOrg = fOrg.value, keepJob = fJob.value, keepYear = fYear.value;
+    fOrg.innerHTML = '<option value="">기관/기업 선택</option>' + orgs.map(o=>`<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
+    fJob.innerHTML = '<option value="">직무/직렬/지역 선택</option>' + jobs.map(j=>`<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join('');
+    fYear.innerHTML = '<option value="">연도 선택</option>' + years.map(y=>`<option value="${escapeHtml(y)}">${escapeHtml(y)}</option>`).join('');
+    if(orgs.includes(keepOrg)) fOrg.value = keepOrg;
+    if(jobs.includes(keepJob)) fJob.value = keepJob;
+    if(years.includes(keepYear)) fYear.value = keepYear;
+  }
+
+  function getScoped(){ return activeCat==="전체" ? data : data.filter(d=>d.cat===activeCat); }
+  function getFiltered(){
+    const q = document.getElementById('fSearch').value.trim().toLowerCase();
+    const org = document.getElementById('fOrg').value;
+    const job = document.getElementById('fJob').value;
+    const year = document.getElementById('fYear').value;
+    return getScoped().filter(d=>{
+      if(org && d.org!==org) return false;
+      if(job && d.job!==job) return false;
+      if(year && String(d.year)!==String(year)) return false;
+      if(q && !(d.question.toLowerCase().includes(q) || d.org.toLowerCase().includes(q))) return false;
+      return true;
+    }).sort((a,b)=> (b.year||0)-(a.year||0) || (b.createdAt||0)-(a.createdAt||0));
+  }
+  function groupByOrg(list){
+    const groups = {};
+    list.forEach(item=>{ const k = item.org || '기타'; if(!groups[k]) groups[k] = []; groups[k].push(item); });
+    return groups;
+  }
+  function groupByJob(list){
+    const groups = {};
+    list.forEach(item=>{ const k = item.job || '미상'; if(!groups[k]) groups[k] = []; groups[k].push(item); });
+    return groups;
+  }
+
+  function renderOrgPicker(){
+    const scoped = getScoped();
+    const counts = {};
+    scoped.forEach(d=>{ const k = d.org||'기타'; counts[k]=(counts[k]||0)+1; });
+    const orgs = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+    document.getElementById('countLine').textContent = orgs.length ? `${orgs.length}개 기관/기업` : '';
+    const el = document.getElementById('listArea');
+    if(orgs.length===0){
+      el.innerHTML = `<div class="ia-card" style="padding:40px;text-align:center;color:#888780;font-size:14px;">등록된 기출문제가 없어요.</div>`;
+      return;
+    }
+    el.innerHTML = `<p style="font-size:13px;color:#6B6F76;margin:0 0 12px;">기관/기업, 직무/직렬/지역, 연도를 선택하거나 검색어를 입력하면 질문이 보여요. 아래에서 바로 기업을 골라도 됩니다.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      ${orgs.map(o=>`<span class="ia-pill org-pill" data-org="${escapeHtml(o)}">${escapeHtml(o)} <span style="color:#B4B2A9;">${counts[o]}</span></span>`).join('')}
+      </div>`;
+    el.querySelectorAll('.org-pill').forEach(p=>{
+      p.addEventListener('click', ()=>{ document.getElementById('fOrg').value = p.dataset.org; renderList(); });
+    });
+  }
+
+  function renderQuestionList(){
+    const list = getFiltered();
+    document.getElementById('countLine').textContent = `총 ${list.length}개의 질문`;
+    const orgGroups = groupByOrg(list);
+    const el = document.getElementById('listArea');
+    if(list.length===0){
+      el.innerHTML = `<div class="ia-card" style="padding:40px;text-align:center;color:#888780;font-size:14px;">조건에 맞는 기출문제가 없어요.</div>`;
+      return;
+    }
+    el.innerHTML = Object.keys(orgGroups).sort((a,b)=>a.localeCompare(b,'ko')).map(org=>{
+      const orgItems = orgGroups[org];
+      const cat = orgItems[0].cat;
+      const color = colorFor(cat);
+      const jobGroups = groupByJob(orgItems);
+      const jobBlocks = Object.keys(jobGroups).sort((a,b)=>a.localeCompare(b,'ko')).map(job=>{
+        const items = jobGroups[job];
+        const cards = items.map(item=>`
+          <div class="ia-card" style="padding:14px 16px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                <span style="font-size:11px;padding:2px 8px;border-radius:100px;background:#F1EFE8;color:#5F5E5A;">${escapeHtml(item.year||'연도 미상')}</span>
+                <span class="admin-only" style="display:${isAdmin?'inline-flex':'none'};font-size:11px;padding:2px 8px;border-radius:100px;background:#EFE7F5;color:#5A3E7A;">${escapeHtml(item.branch||'지점 미상')} · ${escapeHtml(item.staffName||'이름 미상')}</span>
+              </div>
+              <div class="admin-only" style="display:${isAdmin?'flex':'none'};gap:6px;">
+                <button class="ia-btn edit-btn" data-id="${item.id}" style="background:#F1EFE8;color:#1D3A5F;padding:4px 10px;font-size:12px;">수정</button>
+                <button class="ia-btn del-btn" data-id="${item.id}" style="background:#FCEBEB;color:#A32D2D;padding:4px 10px;font-size:12px;">삭제</button>
+              </div>
+            </div>
+            ${item.order?`<p style="font-size:12.5px;color:#2F6F62;font-weight:500;margin:0 0 6px;white-space:pre-wrap;">면접순서: ${escapeHtml(item.order)}</p>`:''}
+            <p style="font-size:14.5px;line-height:1.6;margin:0 0 4px;white-space:pre-wrap;">${escapeHtml(item.question)}</p>
+            ${item.memo?`<p style="font-size:12.5px;color:#888780;margin:8px 0 0;white-space:pre-wrap;">특이사항: ${escapeHtml(item.memo)}</p>`:''}
+          </div>`).join('');
+        return `<div style="margin:0 0 16px 18px;">
+          <p style="font-size:14px;font-weight:700;color:#A32D2D;margin:0 0 6px;">[${groupLabel(cat)}] ${escapeHtml(job)} <span style="color:#B4B2A9;font-weight:400;">${items.length}</span></p>
+          ${cards}
+        </div>`;
+      }).join('');
+      return `<div style="margin-bottom:26px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span style="width:6px;height:6px;border-radius:50%;background:${color};"></span>
+          <h3 style="font-size:15px;font-weight:500;margin:0;color:#22242A;">${escapeHtml(org)}</h3>
+          <span style="font-size:12px;color:${color};">${escapeHtml(cat)}</span>
+        </div>
+        ${jobBlocks}
+      </div>`;
+    }).join('');
+
+    if(isAdmin){
+      el.querySelectorAll('.del-btn').forEach(b=>{
+        b.addEventListener('click', async ()=>{
+          if(b.dataset.confirm!=='1'){
+            b.dataset.confirm = '1';
+            b.textContent = '정말 삭제?';
+            setTimeout(()=>{ if(b.dataset.confirm==='1'){ b.dataset.confirm=''; b.textContent='삭제'; } }, 4000);
+            return;
+          }
+          const prevData = data.slice();
+          data = data.filter(d=>d.id!==b.dataset.id);
+          try{ await saveQuestions(); showBanner('삭제되었습니다.', false); }
+          catch(e){ data = prevData; showBanner(errMsg(e), true); }
+          renderList();
+        });
+      });
+      el.querySelectorAll('.edit-btn').forEach(b=>{
+        b.addEventListener('click', ()=>{ const item = data.find(d=>d.id===b.dataset.id); if(item) openModal(item); });
+      });
+    }
+  }
+
+  function renderList(){
+    const hasFilter = document.getElementById('fOrg').value || document.getElementById('fJob').value ||
+                       document.getElementById('fYear').value || document.getElementById('fSearch').value.trim();
+    if(!hasFilter){ renderOrgPicker(); return; }
+    renderQuestionList();
+  }
+
+  function renderAll(){ renderCatManager(); renderTabs(); renderFilterOptions(); renderList(); }
+  function refreshCatSelect(){ document.getElementById('mCat').innerHTML = cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join(''); }
+
+  function openModal(item){
+    refreshCatSelect();
+    editingId = item ? item.id : null;
+    document.getElementById('modalTitle').textContent = item ? '기출문제 수정' : '기출문제 등록';
+    document.getElementById('mCat').value = item ? item.cat : (activeCat!=="전체" ? activeCat : cats[0]);
+    document.getElementById('mBranch').value = item ? (item.branch || '대구점') : '대구점';
+    document.getElementById('mStaffName').value = item ? (item.staffName || '') : '';
+    document.getElementById('mOrg').value = item ? item.org : '';
+    document.getElementById('mJob').value = item ? item.job : '';
+    document.getElementById('mYear').value = item ? item.year : '';
+    document.getElementById('mOrder').value = item ? (item.order || '') : '';
+    document.getElementById('mQuestion').value = item ? item.question : '';
+    document.getElementById('mMemo').value = item ? item.memo : '';
+    document.getElementById('modalOverlay').style.display = 'flex';
+  }
+
+  document.getElementById('btnAdd').addEventListener('click', ()=> openModal(null));
+  document.getElementById('mCancel').addEventListener('click', ()=>{ document.getElementById('modalOverlay').style.display='none'; });
+  document.getElementById('mSave').addEventListener('click', async ()=>{
+    const q = document.getElementById('mQuestion').value.trim();
+    const org = document.getElementById('mOrg').value.trim();
+    const payload = {
+      cat: document.getElementById('mCat').value,
+      branch: document.getElementById('mBranch').value,
+      staffName: document.getElementById('mStaffName').value.trim(),
+      org: org,
+      job: document.getElementById('mJob').value.trim(),
+      year: document.getElementById('mYear').value.trim(),
+      order: document.getElementById('mOrder').value.trim(),
+      question: q,
+      memo: document.getElementById('mMemo').value.trim()
+    };
+    const prevData = data.slice();
+    if(editingId){
+      const idx = data.findIndex(d=>d.id===editingId);
+      if(idx>=0) data[idx] = {...data[idx], ...payload};
+    } else {
+      data.push({ id: uid(), createdAt: Date.now(), ...payload });
+    }
+    try{ await saveQuestions(); showBanner(editingId ? '수정되었습니다.' : '등록되었습니다.', false); }
+    catch(e){ data = prevData; showBanner(errMsg(e), true); return; }
+    document.getElementById('modalOverlay').style.display = 'none';
+    renderAll();
+  });
+
+  document.getElementById('btnChangeSitePw').addEventListener('click', async ()=>{
+    const input = document.getElementById('newSitePwInput');
+    const val = input.value.trim();
+    if(!val){ showBanner('새 비밀번호를 입력해주세요.', true); return; }
+    const prev = siteAccessPassword;
+    siteAccessPassword = val;
+    try{
+      await docRef.update({ sitePassword: val });
+      input.value = '';
+      showBanner('접속 비밀번호가 변경되었습니다. 강사님들께 새 비밀번호를 알려주세요.', false);
+    }catch(e){ siteAccessPassword = prev; showBanner(errMsg(e), true); }
+  });
+
+  document.getElementById('btnAddCat').addEventListener('click', async ()=>{
+    const input = document.getElementById('newCatInput');
+    const name = input.value.trim();
+    if(!name) return;
+    if(cats.includes(name)){ showBanner('이미 존재하는 섹션입니다.', true); return; }
+    cats.push(name);
+    try{ await saveCats(); input.value=''; showBanner('섹션이 추가되었습니다.', false); }
+    catch(e){ cats.pop(); showBanner(errMsg(e), true); }
+    renderAll();
+  });
+
+  ['fSearch','fOrg','fJob','fYear'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderList);
+    document.getElementById(id).addEventListener('change', renderList);
+  });
+  document.getElementById('btnReset').addEventListener('click', ()=>{
+    document.getElementById('fSearch').value='';
+    document.getElementById('fOrg').value='';
+    document.getElementById('fJob').value='';
+    document.getElementById('fYear').value='';
+    activeCat = "전체";
+    renderAll();
+  });
+
+  function setAdminUI(){
+    document.getElementById('btnAdd').style.display = isAdmin ? 'flex' : 'none';
+    document.getElementById('catManagerWrap').style.display = isAdmin ? 'block' : 'none';
+    const btn = document.getElementById('btnAdminToggle');
+    btn.innerHTML = isAdmin ? '<i class="ti ti-lock-open" aria-hidden="true"></i> 관리자 모드 켜짐' : '<i class="ti ti-lock" aria-hidden="true"></i> 관리자 모드';
+  }
+  document.getElementById('gateSubmit').addEventListener('click', ()=>{
+    const val = document.getElementById('gateInput').value;
+    if(val === siteAccessPassword){
+      document.getElementById('siteGate').style.display = 'none';
+    } else {
+      document.getElementById('gateError').style.display = 'block';
+    }
+  });
+  document.getElementById('gateInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('gateSubmit').click(); });
+
+  document.getElementById('btnAdminToggle').addEventListener('click', ()=>{
+    if(isAdmin){ isAdmin = false; setAdminUI(); renderAll(); return; }
+    document.getElementById('pwInput').value='';
+    document.getElementById('pwError').style.display='none';
+    document.getElementById('pwOverlay').style.display='flex';
+    document.getElementById('pwInput').focus();
+  });
+  document.getElementById('pwCancel').addEventListener('click', ()=>{ document.getElementById('pwOverlay').style.display='none'; });
+  document.getElementById('pwSubmit').addEventListener('click', ()=>{
+    if(document.getElementById('pwInput').value === ADMIN_PASSWORD){
+      isAdmin = true;
+      document.getElementById('pwOverlay').style.display='none';
+      setAdminUI();
+      renderAll();
+    } else {
+      document.getElementById('pwError').style.display='block';
+    }
+  });
+  document.getElementById('pwInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('pwSubmit').click(); });
+
+  function initFirestore(){
+    if(typeof firebase === 'undefined'){
+      showBanner('Firebase 스크립트를 불러오지 못했습니다. 이 화면(미리보기)에서는 외부 스크립트 로딩이 막혀있을 수 있어요 — GitHub Pages에 올려서 실제 주소로 열어보시면 정상 작동합니다.', true);
+      return;
+    }
+    try{
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+      docRef = db.collection('interviewAcademyArchive').doc('main');
+      docRef.onSnapshot(function(snap){
+        if(snap.exists){
+          const d = snap.data();
+          cats = (d.categories && d.categories.length) ? d.categories : DEFAULT_CATS.slice();
+          data = d.questions || [];
+          siteAccessPassword = d.sitePassword || DEFAULT_SITE_PASSWORD;
+        } else {
+          cats = DEFAULT_CATS.slice();
+          data = [];
+          siteAccessPassword = DEFAULT_SITE_PASSWORD;
+          docRef.set({ categories: cats, questions: data, sitePassword: siteAccessPassword }).catch(function(e){ showBanner(errMsg(e), true); });
+        }
+        ready = true;
+        setAdminUI();
+        renderAll();
+      }, function(err){
+        showBanner('Firebase 연결 오류: ' + err.message, true);
+      });
+    }catch(e){
+      showBanner('Firebase 초기화 오류: ' + e.message, true);
+    }
+  }
+
+  initFirestore();
+})();
+</script>
+</body>
+</html>
